@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { compileAndRun, aiCodeReview, chatBot } from '../services/api.js';
-import { updateUserSuccess } from '../redux/user/userSlice.js';
+import { SignOut, updateUserSuccess } from '../redux/user/userSlice.js';
 
 export default function Compiler() {
   const dispatch = useDispatch();
@@ -76,6 +76,13 @@ export default function Compiler() {
             },
             credentials: 'include'
           });
+
+          if (response.status === 401) {
+            dispatch(SignOut());
+            setSolvedProblems([]);
+            return;
+          }
+
           const data = await response.json();
           if (data.success) {
             setSolvedProblems(data.solvedProblems);
@@ -87,7 +94,7 @@ export default function Compiler() {
     };
 
     fetchSolvedProblems();
-  }, [currentUser]);
+  }, [API_URL, currentUser, dispatch]);
 
   useEffect(() => {
     const storedProblem = localStorage.getItem('selectedProblem');

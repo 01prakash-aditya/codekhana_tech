@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { SignOut } from '../redux/user/userSlice.js';
 
 export default function ProblemSet() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [filterDifficulty, setFilterDifficulty] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,6 +26,13 @@ export default function ProblemSet() {
             },
             credentials: 'include'
           });
+
+          if (response.status === 401) {
+            dispatch(SignOut());
+            setSolvedProblems([]);
+            return;
+          }
+
           const data = await response.json();
           if (data.success) {
             setSolvedProblems(data.solvedProblems);
@@ -35,7 +44,7 @@ export default function ProblemSet() {
     };
 
     fetchSolvedProblems();
-  }, [currentUser]);
+  }, [API_URL, currentUser, dispatch]);
 
   useEffect(() => {
     const fetchProblems = async () => {

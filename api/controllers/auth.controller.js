@@ -3,19 +3,34 @@ import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
 
-const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
-const cookieSecure = process.env.COOKIE_SECURE
-  ? process.env.COOKIE_SECURE === 'true'
-  : isProduction;
-const cookieSameSite = process.env.COOKIE_SAMESITE || (cookieSecure ? 'none' : 'lax');
+const isLocalOrigin = (origin = '') => /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
 
-const getAuthCookieOptions = () => ({
-  httpOnly: true,
-  secure: cookieSecure,
-  sameSite: cookieSameSite,
-  path: '/',
-  maxAge: 60 * 60 * 1000,
-});
+const resolveCookieSecurity = (req) => {
+  const origin = req.get('origin') || '';
+  const forwardedProto = (req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+  const isSecureRequest = req.secure || forwardedProto === 'https';
+
+  const envSecure = process.env.COOKIE_SECURE;
+  const secure = envSecure
+    ? envSecure === 'true'
+    : isSecureRequest && !isLocalOrigin(origin);
+
+  const sameSite = process.env.COOKIE_SAMESITE || (secure ? 'none' : 'lax');
+
+  return { secure, sameSite };
+};
+
+const getAuthCookieOptions = (req) => {
+  const { secure, sameSite } = resolveCookieSecurity(req);
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite,
+    path: '/',
+    maxAge: 60 * 60 * 1000,
+  };
+};
 
 export const signup = async (req, res, next) => {
   const { username, email, password, fullName, dob, role, secretCode } = req.body;
@@ -77,6 +92,10 @@ export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   
   try {
+    if (!process.env.JWT_SECRET) {
+      return next(errorHandler(500, 'JWT_SECRET is not configured on server'));
+    }
+
     const validUser = await User.findOne({ email });
     if (!validUser) return next(errorHandler(404, 'User not found'));
     
@@ -93,7 +112,7 @@ export const signin = async (req, res, next) => {
     const { password: hashedPassword, ...rest } = validUser._doc;
     
     res
-      .cookie('access_token', token, getAuthCookieOptions())
+      .cookie('access_token', token, getAuthCookieOptions(req))
       .status(200)
       .json({
         success: true,
@@ -108,6 +127,10 @@ export const signin = async (req, res, next) => {
 
 export const google = async (req, res, next) => {
   try {
+    if (!process.env.JWT_SECRET) {
+      return next(errorHandler(500, 'JWT_SECRET is not configured on server'));
+    }
+
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       const token = jwt.sign({ 
@@ -119,7 +142,7 @@ export const google = async (req, res, next) => {
       
       const { password: hashedPassword, ...rest } = user._doc;
       res
-        .cookie('access_token', token, getAuthCookieOptions())
+        .cookie('access_token', token, getAuthCookieOptions(req))
         .status(200)
         .json({
           success: true,
@@ -157,7 +180,7 @@ export const google = async (req, res, next) => {
       
       const { password: hashedPassword2, ...rest } = newUser._doc;
       res
-        .cookie('access_token', token, getAuthCookieOptions())
+        .cookie('access_token', token, getAuthCookieOptions(req))
         .status(200)
         .json({
           success: true,
@@ -171,10 +194,12 @@ export const google = async (req, res, next) => {
 };
 
 export const signout = (req, res) => {
+  const { secure, sameSite } = resolveCookieSecurity(req);
+
   res.clearCookie('access_token', {
     httpOnly: true,
-    secure: cookieSecure,
-    sameSite: cookieSameSite,
+    secure,
+    sameSite,
     path: '/',
   }).status(200).json({
     success: true,

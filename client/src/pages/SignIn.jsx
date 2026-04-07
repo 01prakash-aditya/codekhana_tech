@@ -19,34 +19,32 @@ export default function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
+    try {
+      dispatch(loginStart());
 
-    dispatch(loginStart());
+      const res = await fetch(`${API_URL}/api/auth/signin`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    const res = await fetch(`${API_URL}/api/auth/signin`,{
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+      const data = await res.json();
+      if (!res.ok || data.success === false) {
+        dispatch(loginFailure(data.message || 'Sign in failed'));
+        return;
+      }
 
-    const data = await res.json();
-    if(data.success === false){
-      dispatch(loginFailure(data.message
-      ));
-      return;
+      dispatch(loginSuccess(data));
+      navigate("/");
+    } catch (err) {
+      dispatch(loginFailure(err.message || 'Network error. Please try again.'));
     }
-    dispatch(loginSuccess(data));
-    navigate("/");
-
-  } catch (err) {
-    dispatch(loginFailure(error));
-  }
-};
+  };
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-5">Sign In</h1>
