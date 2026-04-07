@@ -3,12 +3,16 @@ import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+const cookieSecure = process.env.COOKIE_SECURE
+  ? process.env.COOKIE_SECURE === 'true'
+  : isProduction;
+const cookieSameSite = process.env.COOKIE_SAMESITE || (cookieSecure ? 'none' : 'lax');
 
 const getAuthCookieOptions = () => ({
   httpOnly: true,
-  secure: isProduction,
-  sameSite: isProduction ? 'none' : 'lax',
+  secure: cookieSecure,
+  sameSite: cookieSameSite,
   path: '/',
   maxAge: 60 * 60 * 1000,
 });
@@ -169,8 +173,8 @@ export const google = async (req, res, next) => {
 export const signout = (req, res) => {
   res.clearCookie('access_token', {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
   }).status(200).json({
     success: true,

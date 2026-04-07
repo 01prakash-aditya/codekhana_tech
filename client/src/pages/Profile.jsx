@@ -18,7 +18,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [error, setError] = useState(null);
-  const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
+  const API_URL = import.meta.env.VITE_URL;
   const authHeaders = currentUser?.token ? { Authorization: `Bearer ${currentUser.token}` } : {};
 
   const handleChange = (e) => {

@@ -12,7 +12,7 @@ export default function ProblemSet() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [solvedProblems, setSolvedProblems] = useState([]);
-  const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
+  const API_URL = import.meta.env.VITE_URL;
 
   useEffect(() => {
     const fetchSolvedProblems = async () => {

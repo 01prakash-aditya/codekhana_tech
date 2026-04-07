@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import OAuth from "../components/OAuth.jsx";
-const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
+const API_URL = import.meta.env.VITE_URL;
 
 export default function SignUp() {
   const [formData, setFormData] = useState({

@@ -29,7 +29,7 @@ export default function Compiler() {
   const [chatPrompt, setChatPrompt] = useState('');
   const [reviewType, setReviewType] = useState('code');
   const location = useLocation();
-  const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
+  const API_URL = import.meta.env.VITE_URL;
 
   const defaultCodeTemplates = {
     cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, AlgoU!" << endl;\n    return 0;\n}',

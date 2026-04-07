@@ -11,7 +11,7 @@ export default function ContributePage() {
   const [editingProblem, setEditingProblem] = useState(null);
   const [debugInfo, setDebugInfo] = useState(null);
   const [fetchLoading, setFetchLoading] = useState(false);
-  const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
+  const API_URL = import.meta.env.VITE_URL;
 
   const [formData, setFormData] = useState({
     title: '',
