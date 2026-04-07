@@ -12,13 +12,16 @@ export default function ProblemSet() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [solvedProblems, setSolvedProblems] = useState([]);
-  const API_URL = import.meta.env.VITE_URL || 'http://localhost:3000';
+  const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
 
   useEffect(() => {
     const fetchSolvedProblems = async () => {
       if (currentUser) {
         try {
           const response = await fetch(`${API_URL}/api/user/solved-problems`, {
+            headers: {
+              ...(currentUser?.token && { Authorization: `Bearer ${currentUser.token}` })
+            },
             credentials: 'include'
           });
           const data = await response.json();

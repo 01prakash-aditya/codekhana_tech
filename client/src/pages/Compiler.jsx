@@ -29,7 +29,7 @@ export default function Compiler() {
   const [chatPrompt, setChatPrompt] = useState('');
   const [reviewType, setReviewType] = useState('code');
   const location = useLocation();
-  const API_URL = import.meta.env.VITE_URL || 'http://localhost:3000';
+  const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
 
   const defaultCodeTemplates = {
     cpp: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, AlgoU!" << endl;\n    return 0;\n}',
@@ -71,6 +71,9 @@ export default function Compiler() {
       if (currentUser) {
         try {
           const response = await fetch(`${API_URL}/api/user/solved-problems`, {
+            headers: {
+              ...(currentUser?.token && { Authorization: `Bearer ${currentUser.token}` })
+            },
             credentials: 'include'
           });
           const data = await response.json();
@@ -364,6 +367,7 @@ export default function Compiler() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(currentUser?.token && { Authorization: `Bearer ${currentUser.token}` })
         },
         credentials: 'include',
         body: JSON.stringify({

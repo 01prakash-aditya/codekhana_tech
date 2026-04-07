@@ -3,6 +3,16 @@ import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+const getAuthCookieOptions = () => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
+  path: '/',
+  maxAge: 60 * 60 * 1000,
+});
+
 export const signup = async (req, res, next) => {
   const { username, email, password, fullName, dob, role, secretCode } = req.body;
   
@@ -77,15 +87,9 @@ export const signin = async (req, res, next) => {
     });
 
     const { password: hashedPassword, ...rest } = validUser._doc;
-    const expiryDate = new Date(Date.now() + 3600000); // 1 hour
     
     res
-      .cookie('access_token', token, { 
-        httpOnly: true, 
-        expires: expiryDate,
-        secure: process.env.NODE_ENV === 'production', // Only secure in production
-        sameSite: 'lax' // Better CORS handling
-      })
+      .cookie('access_token', token, getAuthCookieOptions())
       .status(200)
       .json({
         success: true,
@@ -110,14 +114,8 @@ export const google = async (req, res, next) => {
       });
       
       const { password: hashedPassword, ...rest } = user._doc;
-      const expiryDate = new Date(Date.now() + 3600000); // 1 hour
       res
-        .cookie('access_token', token, {
-          httpOnly: true,
-          expires: expiryDate,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax'
-        })
+        .cookie('access_token', token, getAuthCookieOptions())
         .status(200)
         .json({
           success: true,
@@ -154,14 +152,8 @@ export const google = async (req, res, next) => {
       });
       
       const { password: hashedPassword2, ...rest } = newUser._doc;
-      const expiryDate = new Date(Date.now() + 3600000); // 1 hour
       res
-        .cookie('access_token', token, {
-          httpOnly: true,
-          expires: expiryDate,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax'
-        })
+        .cookie('access_token', token, getAuthCookieOptions())
         .status(200)
         .json({
           success: true,
@@ -175,7 +167,12 @@ export const google = async (req, res, next) => {
 };
 
 export const signout = (req, res) => {
-  res.clearCookie('access_token').status(200).json({
+  res.clearCookie('access_token', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
+  }).status(200).json({
     success: true,
     message: 'User has been logged out.'
   });

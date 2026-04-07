@@ -17,8 +17,8 @@ export default function App() {
   const [warmupProgress, setWarmupProgress] = useState(0);
 
   useEffect(() => {
-    const API_URL = import.meta.env.VITE_URL || "http://localhost:3000";
-    const COMPILER_URL = import.meta.env.VITE_URL_COMP || "http://localhost:8000";
+    const API_URL = import.meta.env.VITE_URL || "https://codekhana-tech.onrender.com";
+    const COMPILER_URL = import.meta.env.VITE_URL_COMP || "https://backend-oj.onrender.com";
 
     const minWarmupTimeMs = 30000;
     const maxWarmupTimeMs = 45000;
@@ -30,7 +30,7 @@ export default function App() {
       try {
         const response = await fetch(url, {
           method: "GET",
-          credentials: "include",
+          credentials: "omit",
           cache: "no-store",
         });
         return response.ok;

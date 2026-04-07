@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 export default function OAuth() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const API_URL = import.meta.env.VITE_URL || 'http://localhost:3000';
+    const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
     
     const handleGoogleClick = async () => {
         try {

@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_URL_COMP || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_URL_COMP || 'https://backend-oj.onrender.com';
 
 export const compileAndRun = async (language, code, input = '') => {
   try {

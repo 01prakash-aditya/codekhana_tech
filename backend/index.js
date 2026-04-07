@@ -13,8 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
   origin: true, 
+  credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
 function getExecutor(language) {

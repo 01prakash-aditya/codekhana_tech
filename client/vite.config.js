@@ -10,8 +10,8 @@ const getApiTarget = () => {
     return 'http://api:3000'
   }
   
-  // Use environment variable or default to localhost
-  return process.env.VITE_API_URL || 'http://localhost:3000'
+  // Use environment variable or default to deployed API
+  return process.env.VITE_API_URL || 'https://codekhana-tech.onrender.com'
 }
 
 const apiTarget = getApiTarget()

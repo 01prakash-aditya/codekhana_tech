@@ -18,7 +18,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [error, setError] = useState(null);
-  const API_URL = import.meta.env.VITE_URL || 'http://localhost:3000';
+  const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
+  const authHeaders = currentUser?.token ? { Authorization: `Bearer ${currentUser.token}` } : {};
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -33,6 +34,7 @@ export default function Profile() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...authHeaders,
         },
         credentials: 'include', 
         body: JSON.stringify(formData),
@@ -60,6 +62,9 @@ export default function Profile() {
         dispatch(deleteUserStart());
         const res = await fetch(`${API_URL}/api/user/delete/${currentUser._id}`, {
           method: 'DELETE',
+          headers: {
+            ...authHeaders,
+          },
           credentials: 'include', 
         });
         const data = await res.json();

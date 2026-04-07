@@ -3,7 +3,7 @@ import { useState } from "react";
 import { loginStart, loginSuccess, loginFailure } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth.jsx";
-const API_URL = import.meta.env.VITE_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_URL || 'https://codekhana-tech.onrender.com';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
