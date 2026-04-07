@@ -260,7 +260,14 @@ export default function Compiler() {
         setStatusMessage('AI review failed: No review returned');
       }
     } catch (error) {
-      setStatusMessage(`AI review error: ${error.message}`);
+      const isServiceUnavailable = error?.status === 503 || /service unavailable|high demand|temporarily unavailable/i.test(error?.message || '');
+      const friendlyMessage = isServiceUnavailable
+        ? 'Warning: AI review is temporarily unavailable because the model is under heavy load. Please try again in a few minutes.'
+        : `Error: ${error.message}`;
+
+      setAiReview('');
+      setShowReviewModal(false);
+      setStatusMessage(friendlyMessage);
       console.error('AI Review Error:', error);
     } finally {
       setIsReviewingCode(false);
@@ -287,7 +294,12 @@ export default function Compiler() {
         setStatusMessage('Chat failed: No response returned');
       }
     } catch (error) {
-      setStatusMessage(`Chat error: ${error.message}`);
+      const isServiceUnavailable = error?.status === 503 || /service unavailable|high demand|temporarily unavailable/i.test(error?.message || '');
+      setStatusMessage(
+        isServiceUnavailable
+          ? 'Warning: AI chat is temporarily unavailable because the model is under heavy load. Please try again in a few minutes.'
+          : `Error: ${error.message}`
+      );
       console.error('Chat Bot Error:', error);
     } finally {
       setIsChatting(false);

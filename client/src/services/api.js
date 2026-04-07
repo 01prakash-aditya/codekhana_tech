@@ -45,7 +45,10 @@ export const aiCodeReview = async (language, code, input = '') => {
     const result = await response.json();
     
     if (!response.ok) {
-      throw new Error(result.error || 'Failed to get AI review');
+      const error = new Error(result.error || 'Failed to get AI review');
+      error.status = response.status;
+      error.details = result;
+      throw error;
     }
 
     return result;
@@ -70,7 +73,10 @@ export const chatBot = async (message) => {
     const result = await response.json();
     
     if (!response.ok) {
-      throw new Error(result.error || 'Failed to get AI response');
+      const error = new Error(result.error || 'Failed to get AI response');
+      error.status = response.status;
+      error.details = result;
+      throw error;
     }
 
     return result;

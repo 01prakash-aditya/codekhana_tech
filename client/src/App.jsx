@@ -116,6 +116,7 @@ export default function App() {
         <Route element = {<PrivateRoute/>}>
           <Route path="/profile" element={isWarmingUp ? <Home/> : <Profile/>} />
         </Route>
+        <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );

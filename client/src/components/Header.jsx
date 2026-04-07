@@ -96,7 +96,7 @@ export default function Header({ isWarmingUp = false }) {
                 )}
               </span>
             ) : (
-              <Link className="hover:text-blue-500 flex items-center" to="/profile">
+              <Link className="hover:text-blue-500 flex items-center" to={currentUser ? "/profile" : "/sign-in"}>
                 {currentUser ? (
                   <img
                     src={currentUser.profilePicture || 'https://tableconvert.com/images/avatar.png'}
@@ -126,7 +126,7 @@ export default function Header({ isWarmingUp = false }) {
               )}
             </span>
           ) : (
-            <Link className="hover:text-blue-500 flex items-center" to="/profile">
+            <Link className="hover:text-blue-500 flex items-center" to={currentUser ? "/profile" : "/sign-in"}>
               {currentUser ? (
                 <img
                   src={currentUser.profilePicture || 'https://tableconvert.com/images/avatar.png'}
