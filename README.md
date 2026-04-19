@@ -287,10 +287,3 @@ CI/CD Pipeline: Automated testing and deployment workflows
 
 ---
 
-## Future Enhancements
-
-- **Plagiarism Detection** (e.g., MOSS integration)
-- **Real-Time Leaderboard** using WebSockets
-- **Timer-Based Contests**
-
----
